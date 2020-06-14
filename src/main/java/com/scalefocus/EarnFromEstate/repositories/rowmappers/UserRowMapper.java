@@ -1,6 +1,7 @@
 package com.scalefocus.EarnFromEstate.repositories.rowmappers;
 
 import com.scalefocus.EarnFromEstate.entities.User;
+import com.scalefocus.EarnFromEstate.entities.UserAddress;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ public class UserRowMapper implements RowMapper<User> {
                 .matchingPassword(resultSet.getString("MATCHING_PASSWORD"))
                 .mobilePhone(resultSet.getString("MOBILE_PHONE"))
                 .isEnabled(resultSet.getString("IS_ENABLED"))
-                //.userAddress(resultSet.getString("ADDRESS_ID"))
+                .userAddress(UserAddress.builder().id(resultSet.getLong("ADDRESS_ID")).build())
                 .build();
     }
 }

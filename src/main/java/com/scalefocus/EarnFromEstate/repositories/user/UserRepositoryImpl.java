@@ -15,8 +15,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Slf4j
 @Data
 @Repository
@@ -46,13 +44,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> getUserByEmail(final String email) {
-        Optional<User> existingUser = Optional.empty();
+    public User getUserByEmail(final String email) {
+        User existingUser = null;
         try {
             final SqlParameterSource parameterSource = new MapSqlParameterSource().addValue("email", email);
-            final User user = jdbcTemplate.queryForObject(UserSqlQueries.GET_USER_BY_EMAIL,
+            existingUser = jdbcTemplate.queryForObject(UserSqlQueries.GET_USER_BY_EMAIL,
                     parameterSource, new UserRowMapper());
-            existingUser = Optional.ofNullable(user);
             log.info("In getUserByEmail(), successfully fetched user with email: {}", email);
 
         } catch (final EmptyResultDataAccessException ex) {

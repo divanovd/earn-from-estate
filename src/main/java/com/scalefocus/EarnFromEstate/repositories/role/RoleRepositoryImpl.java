@@ -14,6 +14,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Slf4j
 @Data
 @Repository
@@ -38,6 +41,20 @@ public class RoleRepositoryImpl implements RoleRepository {
             throw new UserException(ex.getMessage());
         }
         return role;
+    }
+
+    @Override
+    public Set<Role> getRolesByUserId(final Long userId) {
+        Set<Role> roles = null;
+        try {
+            final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                    .addValue("id", userId);
+            roles = new HashSet<>(jdbcTemplate.query(RoleSqlQueries.GET_ROLES_BY_USER_ID, parameterSource, new RoleRowMapper()));
+        } catch (final DataAccessException ex) {
+            log.error("In getRolesByUserId(), failed to fetch roles by userId: {}", userId);
+            throw new UserException(ex.getMessage());
+        }
+        return roles;
     }
 
     @Override

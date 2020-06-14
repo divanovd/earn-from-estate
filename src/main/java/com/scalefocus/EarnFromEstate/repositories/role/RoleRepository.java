@@ -2,8 +2,13 @@ package com.scalefocus.EarnFromEstate.repositories.role;
 
 import com.scalefocus.EarnFromEstate.entities.Role;
 
+import java.util.Set;
+
 public interface RoleRepository {
 
     Role getRoleByName(String name);
-    Role saveRole(final Role role);
+
+    Set<Role> getRolesByUserId(Long userId);
+
+    Role saveRole(Role role);
 }

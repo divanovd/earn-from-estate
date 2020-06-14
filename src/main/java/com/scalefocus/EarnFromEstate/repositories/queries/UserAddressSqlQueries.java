@@ -7,4 +7,6 @@ public final class UserAddressSqlQueries {
 
     public static final String INSERT_USER_ADDRESS = "INSERT INTO USER_ADDRESS (CITY, COUNTRY, POST_CODE, STREET, " +
             "STREET_NUMBER) VALUES (:city, :country, :postCode, :street, :streetNumber)";
+
+    public static final String GET_USER_ADDRESS_BY_USER_ID = "SELECT * FROM USER_ADDRESS WHERE ID = :id";
 }

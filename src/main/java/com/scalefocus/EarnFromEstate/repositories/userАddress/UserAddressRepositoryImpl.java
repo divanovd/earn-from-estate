@@ -1,6 +1,5 @@
 package com.scalefocus.EarnFromEstate.repositories.userАddress;
 
-import com.scalefocus.EarnFromEstate.entities.User;
 import com.scalefocus.EarnFromEstate.entities.UserAddress;
 import com.scalefocus.EarnFromEstate.exceptions.UserException;
 import com.scalefocus.EarnFromEstate.repositories.queries.UserAddressSqlQueries;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
@@ -36,11 +36,11 @@ public class UserAddressRepositoryImpl implements UserAddressRepository {
      */
     @Override
     public UserAddress getUserAddressByAllFields(final UserAddress userAddress) {
-        UserAddress existingAddress = null;
+        UserAddress registeredAddress = null;
         try {
             final SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(userAddress);
 
-            existingAddress = jdbcTemplate.queryForObject(UserAddressSqlQueries.GET_USER_ADDRESS_BY_ALL_FIELDS,
+            registeredAddress = jdbcTemplate.queryForObject(UserAddressSqlQueries.GET_USER_ADDRESS_BY_ALL_FIELDS,
                     parameterSource, new UserAddressRowMapper());
         } catch (final EmptyResultDataAccessException ex) {
             log.info("In getUserAddressById(), there is no userAddress: {}.", userAddress);
@@ -51,7 +51,28 @@ public class UserAddressRepositoryImpl implements UserAddressRepository {
         }
 
         log.info("In getUserAddressById(), successfully fetched userAddress: {}", userAddress);
-        return existingAddress;
+        return registeredAddress;
+    }
+
+    /**
+     * Gets the userAddress by given id.
+     *
+     * @param id the id of the address.
+     * @return the UserAdddress object.
+     */
+    @Override
+    public UserAddress getUserAddressById(final Long id) {
+        UserAddress userAddress = null;
+        try {
+            final SqlParameterSource parameterSource = new MapSqlParameterSource()
+                    .addValue("id", id);
+            userAddress = jdbcTemplate.queryForObject(UserAddressSqlQueries.GET_USER_ADDRESS_BY_USER_ID,
+                    parameterSource, new UserAddressRowMapper());
+        } catch (final DataAccessException ex) {
+            log.error("In getUserAddressById(), failed to fetch userAddress by id: {}", id);
+            throw new UserException(ex.getMessage());
+        }
+        return userAddress;
     }
 
     /**

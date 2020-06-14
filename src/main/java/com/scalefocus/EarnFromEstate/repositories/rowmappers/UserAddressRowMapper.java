@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public class UserAddressRowMapper implements RowMapper<UserAddress> {
 
     @Override
-    public UserAddress mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public UserAddress mapRow(final ResultSet rs, final int rowNum) throws SQLException {
         return UserAddress.builder()
                 .id(rs.getLong("ID"))
                 .country(rs.getString("COUNTRY"))

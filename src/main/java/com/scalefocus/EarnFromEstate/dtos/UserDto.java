@@ -1,6 +1,5 @@
 package com.scalefocus.EarnFromEstate.dtos;
 
-import com.scalefocus.EarnFromEstate.entities.UserAddress;
 import com.scalefocus.EarnFromEstate.validators.ValidEmail;
 import com.scalefocus.EarnFromEstate.validators.ValidPassword;
 import lombok.Builder;
@@ -43,5 +42,4 @@ public class UserDto implements Serializable {
     private String mobilePhone;
 
     private UserAddressDto userAddress;
-
 }

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Data
@@ -49,14 +49,17 @@ public class UserServiceImpl implements UserService {
             log.warn("In createAccount(), passwords do not match!");
             throw new UserException(ExceptionMessages.PASSWORD_MATCHING_MESSAGE);
         }
-        final User existingUser = userRepository.getUserByEmail(user.getEmail())
-                .orElseThrow(() -> {
-                    log.error("In createAccount(), user with email: {} already exists!", user.getEmail());
-                    return new UserException(ExceptionMessages.USER_EXISTS_MESSAGE);
-                });
 
-        final Role role = roleRepository.getRoleByName(RolesHolder.ROLE_TENANT);
+        final User existingUser = userRepository.getUserByEmail(user.getEmail());
+        if (Objects.nonNull(existingUser)) {
+            log.error("In createAccount(), user with email: {} already exists!", user.getEmail());
+            throw new UserException(ExceptionMessages.USER_EXISTS_MESSAGE);
+        }
+
+        final Role role = roleRepository.getRoleByName(RolesHolder.ROLE_TENANT.toString());
         user.setRoles(Collections.singleton(role));
+
+        //TODO: fix user enabled to boolean.
         user.setIsEnabled("True");
 
         userAddressRepository.saveUserAddress(user.getUserAddress());
@@ -67,16 +70,12 @@ public class UserServiceImpl implements UserService {
         final String email = userRepository.registerUser(user);
         log.info("Successfully registered user: {}", user);
 
-        //TODO: fix the mapping of address id from the db to userAddress object and add roles.
-        // or use the objects persistedUserAddress and role? Because it fails to fetch address and roles
-        // because the UserRowMapper doesn't has object when i query the user.
-        final User registeredUser = userRepository.getUserByEmail(email).
-        registeredUser.setUserAddress(persistedUserAddress);
+        final User registeredUser = userRepository.getUserByEmail(email);
+
         userRepository.insertUserRoleRelationship(registeredUser.getId(), role.getId());
         registeredUser.setRoles(Collections.singleton(role));
 
         return registeredUser.getEmail();
-
     }
 
     /**
@@ -92,6 +91,12 @@ public class UserServiceImpl implements UserService {
             log.error("In getUserByEmail(), user with such email: {}, does not exists!", email);
             throw new UserException(ExceptionMessages.USER_NOT_EXISTS_MESSAGE);
         }
+
+        final UserAddress userAddress = userAddressRepository.getUserAddressById(user.getUserAddress().getId());
+        user.setUserAddress(userAddress);
+
+        final Set<Role> userRoles = roleRepository.getRolesByUserId(user.getId());
+        user.setRoles(userRoles);
         return user;
     }
 

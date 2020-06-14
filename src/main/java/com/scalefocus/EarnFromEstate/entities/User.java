@@ -32,8 +32,7 @@ public class User {
     //TODO: When the real dbs is plugged into the app, to find a way to persist boolean value.
     private String isEnabled;
 
-    //TODO: to think about CascadeType.All
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "USER_ROLES",
             joinColumns = @JoinColumn(name="USER_ID", referencedColumnName="id"),
@@ -42,6 +41,6 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "ADDRESS_ID", referencedColumnName = "id")
-    private UserAddress userAddress;
+    public UserAddress userAddress;
 
 }
