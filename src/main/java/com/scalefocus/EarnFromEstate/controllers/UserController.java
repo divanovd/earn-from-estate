@@ -3,6 +3,8 @@ package com.scalefocus.EarnFromEstate.controllers;
 import com.scalefocus.EarnFromEstate.converters.UserMapper;
 import com.scalefocus.EarnFromEstate.dtos.UserDto;
 import com.scalefocus.EarnFromEstate.entities.User;
+import com.scalefocus.EarnFromEstate.exceptions.UserException;
+import com.scalefocus.EarnFromEstate.exceptions.messages.ExceptionMessages;
 import com.scalefocus.EarnFromEstate.services.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -30,6 +32,10 @@ public class UserController {
     @PostMapping
     public ResponseEntity<String> register(@RequestBody @Valid final UserDto user) {
         log.info("Calling UserController's register() method with UserDto: {}.", user);
+        if (!user.getPassword().equals(user.getMatchingPassword())) {
+            log.warn("In createAccount(), passwords do not match!");
+            throw new UserException(ExceptionMessages.PASSWORD_MATCHING_MESSAGE);
+        }
         final User userEntity = userMapper.toUser(user);
 
         return new ResponseEntity<>(userService.createAccount(userEntity), HttpStatus.CREATED);

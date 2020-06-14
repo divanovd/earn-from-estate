@@ -12,6 +12,7 @@ import com.scalefocus.EarnFromEstate.utils.RolesHolder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,13 +28,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserAddressRepository userAddressRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(final UserRepository userRepository, final RoleRepository roleRepository,
-                           final UserAddressRepository userAddressRepository) {
+                           final UserAddressRepository userAddressRepository, final PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userAddressRepository = userAddressRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -45,10 +48,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public String createAccount(final User user) {
-        if (!isPasswordMatching(user)) {
-            log.warn("In createAccount(), passwords do not match!");
-            throw new UserException(ExceptionMessages.PASSWORD_MATCHING_MESSAGE);
-        }
 
         final User existingUser = userRepository.getUserByEmail(user.getEmail());
         if (Objects.nonNull(existingUser)) {
@@ -66,6 +65,8 @@ public class UserServiceImpl implements UserService {
         final UserAddress persistedUserAddress =
                 userAddressRepository.getUserAddressByAllFields(user.getUserAddress());
         user.setUserAddress(persistedUserAddress);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         final String email = userRepository.registerUser(user);
         log.info("Successfully registered user: {}", user);
@@ -98,16 +99,6 @@ public class UserServiceImpl implements UserService {
         final Set<Role> userRoles = roleRepository.getRolesByUserId(user.getId());
         user.setRoles(userRoles);
         return user;
-    }
-
-    /**
-     * Used to check if password fields match.
-     *
-     * @param user user object.
-     * @return true/false
-     */
-    private boolean isPasswordMatching(final User user) {
-        return user.getPassword().equals(user.getMatchingPassword());
     }
 
 }
