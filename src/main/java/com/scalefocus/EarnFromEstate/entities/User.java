@@ -25,8 +25,6 @@ public class User {
 
     private String password;
 
-    private String matchingPassword;
-
     private String mobilePhone;
 
     //TODO: When the real dbs is plugged into the app, to find a way to persist boolean value.

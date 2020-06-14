@@ -3,8 +3,8 @@ package com.scalefocus.EarnFromEstate.repositories.queries;
 public final class UserSqlQueries {
 
     public static final String REGISTER_USER = "INSERT INTO USERS (FIRST_NAME, LAST_NAME, EMAIL, " +
-            "PASSWORD, MATCHING_PASSWORD, MOBILE_PHONE, IS_ENABLED, ADDRESS_ID) " +
-            "VALUES (:firstName, :lastName, :email, :password, :matchingPassword, :mobilePhone," +
+            "PASSWORD, MOBILE_PHONE, IS_ENABLED, ADDRESS_ID) " +
+            "VALUES (:firstName, :lastName, :email, :password, :mobilePhone," +
             " :isEnabled, :userAddress.id)";
     public static final String GET_USER_BY_EMAIL = "SELECT * FROM USERS WHERE EMAIL = :email";
 
